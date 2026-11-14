@@ -20,7 +20,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $version = 'dev-2026-06'
-          $url = "https://github.com/odin-lang/Odin/releases/download/$version/odin-windows-amd64-$version.zip"
+          $url = "https://github.com/odin-lang/Odin/releases/download/$version/odin-windows-$version.zip"
           Invoke-WebRequest -Uri $url -OutFile odin.zip
           Expand-Archive -Path odin.zip -DestinationPath odin-toolchain
           $compiler = Get-ChildItem odin-toolchain -Filter odin.exe -Recurse | Select-Object -First 1
