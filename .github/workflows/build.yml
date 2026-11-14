@@ -1,0 +1,62 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out game
+        uses: actions/checkout@v4
+
+      - name: Download Odin with bundled raylib
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = 'dev-2026-06'
+          $url = "https://github.com/odin-lang/Odin/releases/download/$version/odin-windows-amd64-$version.zip"
+          Invoke-WebRequest -Uri $url -OutFile odin.zip
+          Expand-Archive -Path odin.zip -DestinationPath odin-toolchain
+          $compiler = Get-ChildItem odin-toolchain -Filter odin.exe -Recurse | Select-Object -First 1
+          if (-not $compiler) { throw 'Odin compiler was not found in the downloaded archive.' }
+          $odinRoot = $compiler.Directory.FullName
+          if (-not (Test-Path (Join-Path $odinRoot 'vendor/raylib'))) {
+            throw 'Bundled raylib bindings were not found in the Odin archive.'
+          }
+          "ODIN_EXE=$($compiler.FullName)" >> $env:GITHUB_ENV
+          & $compiler.FullName version
+
+      - name: Compile Windows executable
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force dist | Out-Null
+          & $env:ODIN_EXE build . -o:speed -out:dist/DragonsRevenge.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not (Test-Path dist/DragonsRevenge.exe)) { throw 'The executable was not created.' }
+
+      - name: Bundle resources beside the executable
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Copy-Item assets dist/assets -Recurse
+          Copy-Item 'DinoSprites - vita.png' dist/
+          Copy-Item dragon_icon.png dist/
+          Copy-Item blue_knight_icon.png dist/
+          Copy-Item boss_knight_icon.png dist/
+          New-Item -ItemType Directory -Force dist/dinoCharactersVersion1.1/sheets | Out-Null
+          Copy-Item 'dinoCharactersVersion1.1/sheets/DinoSprites - mort.png' dist/dinoCharactersVersion1.1/sheets/
+          Copy-Item WINDOWS_BUILD.md dist/README.txt
+
+      - name: Upload playable Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragonsRevenge-Windows
+          path: dist/
+          if-no-files-found: error

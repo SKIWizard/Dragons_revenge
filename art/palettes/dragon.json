@@ -1,0 +1,21 @@
+{
+  "name": "Hatchling / ember kingdom",
+  "colors": {
+    "outline": "#23333B",
+    "deep_shadow": "#315257",
+    "shadow": "#397064",
+    "mid_green": "#4F9B63",
+    "green": "#69B96B",
+    "light_green": "#91D67B",
+    "highlight": "#C4EC91",
+    "wing_shadow": "#397D73",
+    "wing": "#62B49B",
+    "wing_light": "#91D7B3",
+    "belly_shadow": "#B58250",
+    "belly": "#E9B86C",
+    "belly_light": "#F8D994",
+    "eye": "#111F2A",
+    "eye_shine": "#FFF3CC",
+    "cheek": "#ED8E69"
+  }
+}

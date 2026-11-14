@@ -1,0 +1,293 @@
+{
+  "footstep_stone": {
+    "kind": "impact",
+    "duration": 0.11,
+    "pitch": 170,
+    "noise": 0.7,
+    "brightness": 0.65,
+    "decay": 28
+  },
+  "footstep_wood": {
+    "kind": "impact",
+    "duration": 0.13,
+    "pitch": 115,
+    "noise": 0.42,
+    "brightness": 0.38,
+    "decay": 22
+  },
+  "footstep_grass": {
+    "kind": "rustle",
+    "duration": 0.14,
+    "pitch": 85,
+    "noise": 0.9,
+    "brightness": 0.23,
+    "decay": 23
+  },
+  "footstep_metal": {
+    "kind": "impact",
+    "duration": 0.18,
+    "pitch": 420,
+    "noise": 0.33,
+    "brightness": 0.82,
+    "decay": 16
+  },
+  "footstep_snow": {
+    "kind": "rustle",
+    "duration": 0.16,
+    "pitch": 78,
+    "noise": 0.9,
+    "brightness": 0.16,
+    "decay": 25
+  },
+  "footstep_water": {
+    "kind": "splash",
+    "duration": 0.23,
+    "pitch": 270,
+    "noise": 0.76,
+    "brightness": 0.53,
+    "decay": 13
+  },
+  "jump": {
+    "kind": "sweep",
+    "duration": 0.24,
+    "pitch": 270,
+    "sweep": 530,
+    "noise": 0.13,
+    "decay": 5
+  },
+  "land_soft": {
+    "kind": "impact",
+    "duration": 0.2,
+    "pitch": 95,
+    "noise": 0.63,
+    "brightness": 0.3,
+    "decay": 18
+  },
+  "land_heavy": {
+    "kind": "impact",
+    "duration": 0.34,
+    "pitch": 68,
+    "noise": 0.69,
+    "brightness": 0.32,
+    "decay": 11
+  },
+  "dash": {
+    "kind": "sweep",
+    "duration": 0.18,
+    "pitch": 850,
+    "sweep": -580,
+    "noise": 0.54,
+    "decay": 8
+  },
+  "wall_slide": {
+    "kind": "rustle",
+    "duration": 0.36,
+    "pitch": 140,
+    "noise": 0.89,
+    "decay": 4
+  },
+  "dialogue_hero": {
+    "kind": "blip",
+    "duration": 0.055,
+    "pitch": 530,
+    "noise": 0.08,
+    "decay": 12
+  },
+  "dialogue_dragon": {
+    "kind": "blip",
+    "duration": 0.085,
+    "pitch": 170,
+    "noise": 0.18,
+    "decay": 9
+  },
+  "dialogue_knight": {
+    "kind": "blip",
+    "duration": 0.065,
+    "pitch": 310,
+    "noise": 0.09,
+    "decay": 12
+  },
+  "dialogue_npc": {
+    "kind": "blip",
+    "duration": 0.05,
+    "pitch": 670,
+    "noise": 0.06,
+    "decay": 14
+  },
+  "hurt_player": {
+    "kind": "sweep",
+    "duration": 0.25,
+    "pitch": 440,
+    "sweep": -310,
+    "noise": 0.43,
+    "decay": 8
+  },
+  "hurt_enemy": {
+    "kind": "sweep",
+    "duration": 0.2,
+    "pitch": 280,
+    "sweep": -185,
+    "noise": 0.52,
+    "decay": 10
+  },
+  "attack_slash": {
+    "kind": "sweep",
+    "duration": 0.19,
+    "pitch": 1050,
+    "sweep": -680,
+    "noise": 0.64,
+    "decay": 7
+  },
+  "attack_claw": {
+    "kind": "rustle",
+    "duration": 0.23,
+    "pitch": 440,
+    "noise": 0.82,
+    "decay": 9
+  },
+  "attack_projectile": {
+    "kind": "sweep",
+    "duration": 0.37,
+    "pitch": 420,
+    "sweep": -260,
+    "noise": 0.19,
+    "decay": 4
+  },
+  "enemy_charge": {
+    "kind": "sweep",
+    "duration": 0.55,
+    "pitch": 160,
+    "sweep": 500,
+    "noise": 0.17,
+    "decay": 2
+  },
+  "ui_move": {
+    "kind": "blip",
+    "duration": 0.045,
+    "pitch": 720,
+    "noise": 0.02,
+    "decay": 14
+  },
+  "ui_select": {
+    "kind": "blip",
+    "duration": 0.13,
+    "pitch": 880,
+    "noise": 0.02,
+    "decay": 10
+  },
+  "ui_back": {
+    "kind": "sweep",
+    "duration": 0.12,
+    "pitch": 600,
+    "sweep": -220,
+    "noise": 0.03,
+    "decay": 10
+  },
+  "ui_error": {
+    "kind": "blip",
+    "duration": 0.22,
+    "pitch": 185,
+    "noise": 0.08,
+    "decay": 8
+  },
+  "pickup": {
+    "kind": "sweep",
+    "duration": 0.3,
+    "pitch": 680,
+    "sweep": 520,
+    "noise": 0.03,
+    "decay": 6
+  },
+  "checkpoint": {
+    "kind": "sweep",
+    "duration": 0.65,
+    "pitch": 390,
+    "sweep": 510,
+    "noise": 0.07,
+    "decay": 3
+  },
+  "wind": {
+    "kind": "ambience",
+    "duration": 2.0,
+    "pitch": 74,
+    "noise": 0.94,
+    "brightness": 0.27
+  },
+  "rain": {
+    "kind": "ambience",
+    "duration": 2.0,
+    "pitch": 240,
+    "noise": 0.99,
+    "brightness": 0.71
+  },
+  "fire": {
+    "kind": "ambience",
+    "duration": 2.0,
+    "pitch": 130,
+    "noise": 0.92,
+    "brightness": 0.46
+  },
+  "water_drip": {
+    "kind": "splash",
+    "duration": 0.35,
+    "pitch": 480,
+    "noise": 0.29,
+    "decay": 13
+  },
+  "rock_fall": {
+    "kind": "impact",
+    "duration": 0.52,
+    "pitch": 65,
+    "noise": 0.79,
+    "decay": 7
+  },
+  "egg_crack": {
+    "kind": "impact",
+    "duration": 0.24,
+    "pitch": 340,
+    "noise": 0.71,
+    "brightness": 0.62,
+    "decay": 18
+  },
+  "barrel_break": {
+    "kind": "impact",
+    "duration": 0.38,
+    "pitch": 105,
+    "noise": 0.68,
+    "brightness": 0.32,
+    "decay": 12
+  },
+  "explosion": {
+    "kind": "impact",
+    "duration": 0.72,
+    "pitch": 58,
+    "noise": 0.91,
+    "brightness": 0.39,
+    "decay": 5
+  },
+  "fire_breath": {
+    "kind": "rustle",
+    "duration": 0.38,
+    "pitch": 220,
+    "noise": 0.87,
+    "brightness": 0.59,
+    "decay": 4
+  },
+  "plasma_beam": {
+    "kind": "sweep",
+    "duration": 0.45,
+    "pitch": 920,
+    "sweep": -80,
+    "noise": 0.24,
+    "brightness": 0.88,
+    "decay": 3
+  },
+  "acid_sizzle": {
+    "kind": "rustle",
+    "duration": 0.38,
+    "pitch": 320,
+    "noise": 0.88,
+    "brightness": 0.64,
+    "decay": 7
+  }
+}

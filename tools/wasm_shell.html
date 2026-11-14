@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dragons Revenge</title>
+  <style>
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #090d18; }
+    body { display: flex; align-items: center; justify-content: center; }
+    canvas { display: block; width: min(100vw, 177.34vh); height: auto; max-height: 100vh;
+             image-rendering: pixelated; outline: none; }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="1080" height="609" tabindex="0"></canvas>
+  <script>
+    var Module = {
+      canvas: document.getElementById('canvas'),
+      print: function (text) { console.log(text); },
+      printErr: function (text) { console.error(text); }
+    };
+    Module.canvas.focus();
+  </script>
+  {{{ SCRIPT }}}
+</body>
+</html>
