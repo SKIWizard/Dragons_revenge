@@ -7,6 +7,39 @@ enemy_test_floor :: proc(w: ^World) {
 }
 
 @test
+boss_breaks_stalemate_next_to_stationary_player :: proc(t: ^testing.T) {
+    w := new(World)
+    defer free(w)
+    enemy_test_floor(w)
+    player := Player{x = 40, y = 80, health = PLAYER_MAX_HEALTH}
+    set_player_collision(w, &player)
+    w.enemies[0] = Enemy{kind = .Boss, x = 50, y = 63, health = BOSS_HEALTH,
+                         facing = -1, alive = true, grounded = true, alert_time = 4}
+    w.enemy_count = 1
+    escaped := false
+    for _ in 0..<45 {
+        update_enemies(w, &player)
+        if w.enemies[0].retreat_timer > 0 && w.enemies[0].vy < 0 { escaped = true }
+    }
+    testing.expect(t, escaped)
+}
+
+@test
+dragon_can_walk_out_of_accidental_boss_overlap :: proc(t: ^testing.T) {
+    w := new(World)
+    defer free(w)
+    player := Player{x = 65, y = 80, health = PLAYER_MAX_HEALTH}
+    set_player_collision(w, &player)
+    w.enemies[0] = Enemy{kind = .Boss, x = 70, y = 65,
+                         health = BOSS_HEALTH, alive = true}
+    w.enemy_count = 1
+    current := player_enemy_overlap_count(player.x, player.y, &w.enemies[0])
+    testing.expect(t, current > 0)
+    testing.expect(t, player_enemy_overlap_count(player.x-1, player.y, &w.enemies[0]) < current)
+    testing.expect(t, player_can_enter(w, player.x-1, player.y, 0))
+}
+
+@test
 knight_chases_and_hits_player_once_per_attack :: proc(t: ^testing.T) {
     w := new(World)
     defer free(w)

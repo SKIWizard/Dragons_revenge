@@ -52,11 +52,13 @@ generated_level_has_continuous_walkable_terrain_and_props :: proc(t: ^testing.T)
             testing.expect(t, kind_at(w, x, y) == .Stone)
             testing.expect(t, kind_at(w, x, intro_roof(x)) == .Stone)
         } else {
-            testing.expect(t, kind_at(w, x, y) == .Grass)
-            testing.expect(t, kind_at(w, x, y+GRASS_DEPTH-1) == .Grass)
-            testing.expect(t, kind_at(w, x, y+GRASS_DEPTH) == .Ground)
-            testing.expect(t, kind_at(w, x, y+SOIL_DEPTH-1) == .Ground)
-            testing.expect(t, kind_at(w, x, y+SOIL_DEPTH) == .Stone)
+            testing.expect(t, kind_at(w, x, y) == terrain_surface_material(x))
+            if x >= CAVE_EXIT_X+EXIT_TERRAIN_BLEND {
+                testing.expect(t, kind_at(w, x, y+GRASS_DEPTH-1) == .Grass)
+                testing.expect(t, kind_at(w, x, y+GRASS_DEPTH) == .Ground)
+                testing.expect(t, kind_at(w, x, y+SOIL_DEPTH-1) == .Ground)
+                testing.expect(t, kind_at(w, x, y+SOIL_DEPTH) == .Stone)
+            }
         }
         if x > 0 { testing.expect(t, abs(y-level.terrain[x-1]) <= MAX_STEP_HEIGHT) }
     }
@@ -112,6 +114,24 @@ generated_level_has_continuous_walkable_terrain_and_props :: proc(t: ^testing.T)
         }
     }
     testing.expect(t, groups >= 5)
+}
+
+@test
+vessel_contents_never_solidify_into_stone :: proc(t: ^testing.T) {
+    seed: u32 = 41
+    for _ in 0..<1000 {
+        testing.expect(t, choose_vessel_material(&seed) != .Lava)
+        testing.expect(t, choose_vessel_material(&seed) != .Stone)
+    }
+}
+
+@test
+cave_floor_blends_to_grass_and_deep_soil :: proc(t: ^testing.T) {
+    testing.expect(t, terrain_surface_material(CAVE_EXIT_X+1) == .Stone)
+    testing.expect(t, terrain_surface_material(CAVE_EXIT_X+EXIT_TERRAIN_BLEND) == .Grass)
+    testing.expect(t, terrain_soil_depth(CAVE_EXIT_X+1) < terrain_soil_depth(CAVE_EXIT_X+48))
+    testing.expect(t, terrain_soil_depth(CAVE_EXIT_X+48) < SOIL_DEPTH)
+    testing.expect(t, terrain_soil_depth(CAVE_EXIT_X+EXIT_TERRAIN_BLEND) == SOIL_DEPTH)
 }
 
 @test

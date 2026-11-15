@@ -332,9 +332,9 @@ main :: proc() {
     if !rl.IsRenderTextureValid(canvas) { return }
     defer rl.UnloadRenderTexture(canvas)
     rl.SetTextureFilter(canvas.texture, .POINT)
-    slowmo_shader_path: cstring = "assets/shaders/intro_slowmo.fs"
+    slowmo_shader_path: string = "assets/shaders/intro_slowmo.fs"
     when ODIN_OS == .JS { slowmo_shader_path = "assets/shaders/intro_slowmo_web.fs" }
-    slowmo_shader := rl.LoadShader(nil, slowmo_shader_path)
+    slowmo_shader := load_embedded_shader(slowmo_shader_path)
     defer rl.UnloadShader(slowmo_shader)
     stone_texture := load_material_texture("assets/textures/stone_texture.png")
     defer unload_material_texture(&stone_texture)
@@ -342,102 +342,102 @@ main :: proc() {
     defer unload_material_texture(&wood_texture)
     rl.HideCursor()
     defer rl.ShowCursor()
-    dragon_sprite := rl.LoadTexture("DinoSprites - vita.png")
+    dragon_sprite := load_embedded_texture("DinoSprites - vita.png")
     if rl.IsTextureValid(dragon_sprite) { rl.SetTextureFilter(dragon_sprite, .POINT) }
     defer rl.UnloadTexture(dragon_sprite)
-    mort_sprite := rl.LoadTexture("dinoCharactersVersion1.1/sheets/DinoSprites - mort.png")
+    mort_sprite := load_embedded_texture("dinoCharactersVersion1.1/sheets/DinoSprites - mort.png")
     if rl.IsTextureValid(mort_sprite) { rl.SetTextureFilter(mort_sprite, .POINT) }
     defer rl.UnloadTexture(mort_sprite)
-    jump_sprite := rl.LoadTexture("assets/sprites/dino_vita_jump.png")
+    jump_sprite := load_embedded_texture("assets/sprites/dino_vita_jump.png")
     if rl.IsTextureValid(jump_sprite) { rl.SetTextureFilter(jump_sprite, .POINT) }
     defer rl.UnloadTexture(jump_sprite)
-    mort_jump_sprite := rl.LoadTexture("assets/sprites/dino_mort_jump.png")
+    mort_jump_sprite := load_embedded_texture("assets/sprites/dino_mort_jump.png")
     if rl.IsTextureValid(mort_jump_sprite) { rl.SetTextureFilter(mort_jump_sprite, .POINT) }
     defer rl.UnloadTexture(mort_jump_sprite)
-    spit_sprite := rl.LoadTexture("assets/sprites/dino_vita_spit.png")
+    spit_sprite := load_embedded_texture("assets/sprites/dino_vita_spit.png")
     if rl.IsTextureValid(spit_sprite) { rl.SetTextureFilter(spit_sprite, .POINT) }
     defer rl.UnloadTexture(spit_sprite)
-    mort_spit_sprite := rl.LoadTexture("assets/sprites/dino_mort_spit.png")
+    mort_spit_sprite := load_embedded_texture("assets/sprites/dino_mort_spit.png")
     if rl.IsTextureValid(mort_spit_sprite) { rl.SetTextureFilter(mort_spit_sprite, .POINT) }
     defer rl.UnloadTexture(mort_spit_sprite)
-    spit_run_sprite := rl.LoadTexture("assets/sprites/dino_vita_spit_run.png")
+    spit_run_sprite := load_embedded_texture("assets/sprites/dino_vita_spit_run.png")
     if rl.IsTextureValid(spit_run_sprite) { rl.SetTextureFilter(spit_run_sprite, .POINT) }
     defer rl.UnloadTexture(spit_run_sprite)
-    mort_spit_run_sprite := rl.LoadTexture("assets/sprites/dino_mort_spit_run.png")
+    mort_spit_run_sprite := load_embedded_texture("assets/sprites/dino_mort_spit_run.png")
     if rl.IsTextureValid(mort_spit_run_sprite) { rl.SetTextureFilter(mort_spit_run_sprite, .POINT) }
     defer rl.UnloadTexture(mort_spit_run_sprite)
-    background := rl.LoadTexture("assets/backgrounds/medieval_panorama.png")
+    background := load_embedded_texture("assets/backgrounds/medieval_panorama.png")
     if rl.IsTextureValid(background) { rl.SetTextureFilter(background, .BILINEAR) }
     defer rl.UnloadTexture(background)
-    cave_tiles := rl.LoadTexture("assets/backgrounds/cave_brick_seamless.png")
+    cave_tiles := load_embedded_texture("assets/backgrounds/cave_brick_seamless.png")
     if rl.IsTextureValid(cave_tiles) { rl.SetTextureFilter(cave_tiles, .POINT) }
     defer rl.UnloadTexture(cave_tiles)
     menu_labels := [4]rl.Texture2D{
-        rl.LoadTexture("assets/ui/menu_play.png"),
-        rl.LoadTexture("assets/ui/menu_settings.png"),
-        rl.LoadTexture("assets/ui/menu_volume.png"),
-        rl.LoadTexture("assets/ui/menu_back.png"),
+        load_embedded_texture("assets/ui/menu_play.png"),
+        load_embedded_texture("assets/ui/menu_settings.png"),
+        load_embedded_texture("assets/ui/menu_volume.png"),
+        load_embedded_texture("assets/ui/menu_back.png"),
     }
     defer for label in menu_labels { rl.UnloadTexture(label) }
-    egg_sprite := rl.LoadTexture("assets/sprites/intro_egg.png")
+    egg_sprite := load_embedded_texture("assets/sprites/intro_egg.png")
     if rl.IsTextureValid(egg_sprite) { rl.SetTextureFilter(egg_sprite, .POINT) }
     defer rl.UnloadTexture(egg_sprite)
-    dragon_portrait := rl.LoadTexture("dragon_icon.png")
+    dragon_portrait := load_embedded_texture("dragon_icon.png")
     defer rl.UnloadTexture(dragon_portrait)
-    knight_portrait := rl.LoadTexture("blue_knight_icon.png")
+    knight_portrait := load_embedded_texture("blue_knight_icon.png")
     defer rl.UnloadTexture(knight_portrait)
-    boss_portrait := rl.LoadTexture("boss_knight_icon.png")
+    boss_portrait := load_embedded_texture("boss_knight_icon.png")
     defer rl.UnloadTexture(boss_portrait)
     dialogue_text := [5]rl.Texture2D{
-        rl.LoadTexture("assets/ui/dialogue_awakening.png"),
-        rl.LoadTexture("assets/ui/dialogue_knight.png"),
-        rl.LoadTexture("assets/ui/dialogue_dragon_shock.png"),
-        rl.LoadTexture("assets/ui/dialogue_knight_threat.png"),
-        rl.LoadTexture("assets/ui/dialogue_dragon_vow.png"),
+        load_embedded_texture("assets/ui/dialogue_awakening.png"),
+        load_embedded_texture("assets/ui/dialogue_knight.png"),
+        load_embedded_texture("assets/ui/dialogue_dragon_shock.png"),
+        load_embedded_texture("assets/ui/dialogue_knight_threat.png"),
+        load_embedded_texture("assets/ui/dialogue_dragon_vow.png"),
     }
     defer for sheet in dialogue_text { rl.UnloadTexture(sheet) }
     boss_dialogue_text := [4]rl.Texture2D{
-        rl.LoadTexture("assets/ui/dialogue_boss_question.png"),
-        rl.LoadTexture("assets/ui/dialogue_boss_answer.png"),
-        rl.LoadTexture("assets/ui/dialogue_boss_defiance.png"),
-        rl.LoadTexture("assets/ui/dialogue_boss_farewell.png"),
+        load_embedded_texture("assets/ui/dialogue_boss_question.png"),
+        load_embedded_texture("assets/ui/dialogue_boss_answer.png"),
+        load_embedded_texture("assets/ui/dialogue_boss_defiance.png"),
+        load_embedded_texture("assets/ui/dialogue_boss_farewell.png"),
     }
     defer for sheet in boss_dialogue_text { rl.UnloadTexture(sheet) }
     intro_cards := [5]rl.Texture2D{
-        rl.LoadTexture("assets/ui/intro_egg.png"),
-        rl.LoadTexture("assets/ui/intro_move.png"),
-        rl.LoadTexture("assets/ui/intro_fire.png"),
-        rl.LoadTexture("assets/ui/intro_fight.png"),
-        rl.LoadTexture("assets/ui/intro_barrel.png"),
+        load_embedded_texture("assets/ui/intro_egg.png"),
+        load_embedded_texture("assets/ui/intro_move.png"),
+        load_embedded_texture("assets/ui/intro_fire.png"),
+        load_embedded_texture("assets/ui/intro_fight.png"),
+        load_embedded_texture("assets/ui/intro_barrel.png"),
     }
     defer for card in intro_cards { rl.UnloadTexture(card) }
-    barrel_texture := rl.LoadTexture("assets/sprites/barrel_break.png")
+    barrel_texture := load_embedded_texture("assets/sprites/barrel_break.png")
     if rl.IsTextureValid(barrel_texture) { rl.SetTextureFilter(barrel_texture, .POINT) }
     defer rl.UnloadTexture(barrel_texture)
-    eat_sprite := rl.LoadTexture("assets/sprites/dino_vita_eat.png")
+    eat_sprite := load_embedded_texture("assets/sprites/dino_vita_eat.png")
     if rl.IsTextureValid(eat_sprite) { rl.SetTextureFilter(eat_sprite, .POINT) }
     defer rl.UnloadTexture(eat_sprite)
-    mort_eat_sprite := rl.LoadTexture("assets/sprites/dino_mort_eat.png")
+    mort_eat_sprite := load_embedded_texture("assets/sprites/dino_mort_eat.png")
     if rl.IsTextureValid(mort_eat_sprite) { rl.SetTextureFilter(mort_eat_sprite, .POINT) }
     defer rl.UnloadTexture(mort_eat_sprite)
-    material_icons := rl.LoadTexture("assets/sprites/material_icons.png")
+    material_icons := load_embedded_texture("assets/sprites/material_icons.png")
     if rl.IsTextureValid(material_icons) { rl.SetTextureFilter(material_icons, .POINT) }
     defer rl.UnloadTexture(material_icons)
-    knight_sprite := rl.LoadTexture("assets/sprites/knight_blue.png")
+    knight_sprite := load_embedded_texture("assets/sprites/knight_blue.png")
     if rl.IsTextureValid(knight_sprite) { rl.SetTextureFilter(knight_sprite, .POINT) }
     defer rl.UnloadTexture(knight_sprite)
-    ogre_sprite := rl.LoadTexture("assets/sprites/ogre.png")
+    ogre_sprite := load_embedded_texture("assets/sprites/ogre.png")
     if rl.IsTextureValid(ogre_sprite) { rl.SetTextureFilter(ogre_sprite, .POINT) }
     defer rl.UnloadTexture(ogre_sprite)
-    barbarian_sprite := rl.LoadTexture("assets/sprites/barbarian.png")
+    barbarian_sprite := load_embedded_texture("assets/sprites/barbarian.png")
     if rl.IsTextureValid(barbarian_sprite) { rl.SetTextureFilter(barbarian_sprite, .POINT) }
     defer rl.UnloadTexture(barbarian_sprite)
-    boss_sprite := rl.LoadTexture("assets/sprites/free_knight_boss.png")
+    boss_sprite := load_embedded_texture("assets/sprites/free_knight_boss.png")
     if rl.IsTextureValid(boss_sprite) { rl.SetTextureFilter(boss_sprite, .POINT) }
     defer rl.UnloadTexture(boss_sprite)
-    ending_art := rl.LoadTexture("assets/backgrounds/ending_sunset_wide.png")
+    ending_art := load_embedded_texture("assets/backgrounds/ending_sunset_wide.png")
     defer rl.UnloadTexture(ending_art)
-    ending_title := rl.LoadTexture("assets/ui/ending_title.png")
+    ending_title := load_embedded_texture("assets/ui/ending_title.png")
     defer rl.UnloadTexture(ending_title)
     when ODIN_OS != .JS { rl.SetTargetFPS(60) }
     accumulator: f32 = 0
@@ -789,7 +789,7 @@ main :: proc() {
             active_sprite := dragon_sprite
             if p.empowered && rl.IsTextureValid(mort_sprite) { active_sprite = mort_sprite }
             if spit_state.mouth_time > 0 && rl.IsTextureValid(spit_sprite) {
-                mouth_frame := min(3, int(spit_state.mouth_time/f32(0.07)))
+                mouth_frame := min(3, 1+int(spit_state.mouth_time/f32(0.07)))
                 if animation == .Walk && rl.IsTextureValid(spit_run_sprite) {
                     active_sprite = spit_run_sprite
                     if p.empowered && rl.IsTextureValid(mort_spit_run_sprite) { active_sprite = mort_spit_run_sprite }
@@ -805,12 +805,23 @@ main :: proc() {
                 frame = 0
                 if p.vy >= 0 { frame = 1 }
             }
-            source := rl.Rectangle{f32(frame*DINO_FRAME_SIZE), 0, DINO_FRAME_SIZE, DINO_FRAME_SIZE}
-            if p.facing < 0 { source.width = -DINO_FRAME_SIZE }
+            spit_pose := spit_state.mouth_time > 0 &&
+                (active_sprite.id == spit_sprite.id || active_sprite.id == spit_run_sprite.id ||
+                 active_sprite.id == mort_spit_sprite.id || active_sprite.id == mort_spit_run_sprite.id)
+            frame_width := f32(DINO_FRAME_SIZE)
+            frame_height := f32(DINO_FRAME_SIZE)
+            if spit_pose { frame_width, frame_height = 48, 32 }
+            source := rl.Rectangle{f32(frame)*frame_width, 0, frame_width, frame_height}
+            if p.facing < 0 { source.width = -frame_width }
             destination := rl.Rectangle{
                 f32(int(render_x*CELL_SIZE)-camera_px_x-13),
-                f32(int(render_y*CELL_SIZE)-camera_px_y-3),
-                72, 72,
+                f32(int(render_y*CELL_SIZE)-camera_px_y-3), 72, 72,
+            }
+            if spit_pose {
+                destination.y -= 21
+                destination.width = 48*CELL_SIZE
+                destination.height = 32*CELL_SIZE
+                if p.facing < 0 { destination.x -= 24*CELL_SIZE }
             }
             rl.DrawTexturePro(active_sprite, source, destination, rl.Vector2{}, 0, dragon_tint)
         }

@@ -9,8 +9,8 @@ MaterialTexture :: struct {
     width, height: int,
 }
 
-load_material_texture :: proc(path: cstring) -> MaterialTexture {
-    image := rl.LoadImage(path)
+load_material_texture :: proc(path: string) -> MaterialTexture {
+    image := load_embedded_image(path)
     if !rl.IsImageValid(image) { return {} }
     defer rl.UnloadImage(image)
     return MaterialTexture{

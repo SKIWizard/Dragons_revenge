@@ -5,6 +5,7 @@ MAX_LEVEL_HOUSES :: 12
 MAX_LEVEL_VESSELS :: 12
 GRASS_DEPTH :: 2
 SOIL_DEPTH :: 18
+EXIT_TERRAIN_BLEND :: 96
 
 BARREL_CONTENTS := [15]Material{
     .Sand, .Water, .Stone, .Smoke, .Wood, .Steam, .Plasma,
@@ -109,8 +110,25 @@ place_house :: proc(w: ^World, house: ^House) {
 }
 
 choose_vessel_material :: proc(seed: ^u32) -> Material {
-    contents := [7]Material{.Water, .Petrol, .Acid, .Lava, .Sand, .Powder, .Snow}
+    // Lava cools into stone in an open glass vessel, so keep it out too.
+    contents := [6]Material{.Water, .Petrol, .Acid, .Sand, .Powder, .Snow}
     return contents[level_random(seed)%u32(len(contents))]
+}
+
+terrain_surface_material :: proc(x: int) -> Material {
+    if x <= CAVE_EXIT_X { return .Stone }
+    distance := x-CAVE_EXIT_X
+    if distance >= EXIT_TERRAIN_BLEND { return .Grass }
+    patch := x/6
+    variation := (patch*37+patch*patch/11)%23-11
+    if distance+variation > EXIT_TERRAIN_BLEND/3 { return .Grass }
+    if distance+variation > EXIT_TERRAIN_BLEND/8 { return .Ground }
+    return .Stone
+}
+
+terrain_soil_depth :: proc(x: int) -> int {
+    if x <= CAVE_EXIT_X { return 0 }
+    return min(SOIL_DEPTH, (x-CAVE_EXIT_X)*SOIL_DEPTH/EXIT_TERRAIN_BLEND)
 }
 
 place_vessel :: proc(w: ^World, vessel: ^Vessel) {
@@ -170,8 +188,9 @@ generate_level :: proc(w: ^World, level: ^Level, random_seed: u32) {
         for y := level.terrain[x]; y < WORLD_H; y += 1 {
             material := Material.Stone
             depth := y-level.terrain[x]
-            if x > CAVE_EXIT_X && depth < GRASS_DEPTH { material = .Grass }
-            else if x > CAVE_EXIT_X && depth < SOIL_DEPTH { material = .Ground }
+            soil_depth := terrain_soil_depth(x)
+            if depth < GRASS_DEPTH { material = terrain_surface_material(x) }
+            else if depth < soil_depth { material = .Ground }
             place(w, x, y, material)
         }
     }

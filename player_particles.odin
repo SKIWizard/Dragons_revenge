@@ -132,14 +132,19 @@ push_particle_out :: proc(w: ^World, x, y, player_x, player_y: int) -> bool {
     return push_particle_out_body(w, x, y, player_x, player_y, .Dragon, -1)
 }
 
-player_overlaps_enemy :: proc(player_x, player_y: int, enemy: ^Enemy) -> bool {
+player_enemy_overlap_count :: proc(player_x, player_y: int, enemy: ^Enemy) -> int {
+    overlaps := 0
     for cy := max(player_y, enemy.y); cy < min(player_y+PLAYER_H, enemy.y+enemy_height(enemy.kind)); cy += 1 {
         for cx := max(player_x, enemy.x); cx < min(player_x+PLAYER_W, enemy.x+enemy_width(enemy.kind)); cx += 1 {
             if player_body_contains(cx, cy, player_x, player_y) &&
-               enemy_body_contains_kind(enemy.kind, cx, cy, enemy.x, enemy.y) { return true }
+               enemy_body_contains_kind(enemy.kind, cx, cy, enemy.x, enemy.y) { overlaps += 1 }
         }
     }
-    return false
+    return overlaps
+}
+
+player_overlaps_enemy :: proc(player_x, player_y: int, enemy: ^Enemy) -> bool {
+    return player_enemy_overlap_count(player_x, player_y, enemy) > 0
 }
 
 player_can_enter :: proc(w: ^World, x, y, dy: int) -> bool {
@@ -153,7 +158,12 @@ player_can_enter :: proc(w: ^World, x, y, dy: int) -> bool {
     }
     for i := 0; i < w.enemy_count; i += 1 {
         enemy := &w.enemies[i]
-        if !enemy.alive || !player_overlaps_enemy(x, y, enemy) { continue }
+        if !enemy.alive { continue }
+        overlap := player_enemy_overlap_count(x, y, enemy)
+        if overlap == 0 { continue }
+        // A rare overlap should never imprison the dragon: moving out of it
+        // one pixel at a time is always allowed.
+        if w.player_collision_active && overlap < player_enemy_overlap_count(w.player_x, w.player_y, enemy) { continue }
         if dy >= 0 || !lift_enemy_one_cell(w, i) || player_overlaps_enemy(x, y, enemy) { return false }
     }
     for cy := y; cy < y+PLAYER_H; cy += 1 {

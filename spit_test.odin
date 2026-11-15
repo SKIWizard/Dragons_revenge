@@ -146,19 +146,22 @@ sprayed_particles_cross_without_blocking_one_another :: proc(t: ^testing.T) {
 }
 
 @test
-powder_becomes_falling_world_material_when_spray_ends :: proc(t: ^testing.T) {
+ordinary_spray_keeps_horizontal_momentum_and_arcs_down :: proc(t: ^testing.T) {
     w := new(World)
     defer free(w)
-    for x := 90; x < 110; x += 1 { place(w, x, 80, .Stone) }
     state := SpitState{}
-    state.shots[0] = FlyingParticle{x = 100, y = 30, material = .Sand,
+    state.shots[0] = FlyingParticle{x = 100, y = 30, vx = 2, material = .Sand,
                                     life_ticks = 1, active = true}
     update_flying_particles(w, &state)
-    testing.expect(t, !state.shots[0].active)
-    testing.expect(t, kind_at(w, 100, 30) == .Sand)
-    for _ in 0..<20 { step_world(w) }
-    testing.expect(t, count_kind(w, .Sand) == 1)
-    testing.expect(t, kind_at(w, 100, 30) == .Empty)
+    testing.expect(t, state.shots[0].active && state.shots[0].settling)
+    testing.expect(t, state.shots[0].vx == 2)
+    testing.expect(t, state.shots[0].x == 102)
+    first_y := state.shots[0].y
+    for _ in 0..<8 { update_flying_particles(w, &state) }
+    testing.expect(t, state.shots[0].active)
+    testing.expect(t, state.shots[0].x == 118)
+    testing.expect(t, state.shots[0].y > first_y+4)
+    testing.expect(t, state.shots[0].vx == 2)
 }
 
 @test

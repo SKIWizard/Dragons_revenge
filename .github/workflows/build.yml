@@ -20,7 +20,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $version = 'dev-2026-06'
-          $url = "https://github.com/odin-lang/Odin/releases/download/$version/odin-windows-$version.zip"
+          $url = "https://github.com/odin-lang/Odin/releases/download/$version/odin-windows-amd64-$version.zip"
           Invoke-WebRequest -Uri $url -OutFile odin.zip
           Expand-Archive -Path odin.zip -DestinationPath odin-toolchain
           $compiler = Get-ChildItem odin-toolchain -Filter odin.exe -Recurse | Select-Object -First 1
@@ -41,22 +41,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if (-not (Test-Path dist/DragonsRevenge.exe)) { throw 'The executable was not created.' }
 
-      - name: Bundle resources beside the executable
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          Copy-Item assets dist/assets -Recurse
-          Copy-Item 'DinoSprites - vita.png' dist/
-          Copy-Item dragon_icon.png dist/
-          Copy-Item blue_knight_icon.png dist/
-          Copy-Item boss_knight_icon.png dist/
-          New-Item -ItemType Directory -Force dist/dinoCharactersVersion1.1/sheets | Out-Null
-          Copy-Item 'dinoCharactersVersion1.1/sheets/DinoSprites - mort.png' dist/dinoCharactersVersion1.1/sheets/
-          Copy-Item WINDOWS_BUILD.md dist/README.txt
-
-      - name: Upload playable Windows build
+      - name: Upload single-file Windows build
         uses: actions/upload-artifact@v4
         with:
-          name: DragonsRevenge-Windows
-          path: dist/
+          name: DragonsRevenge-Single-EXE
+          path: dist/DragonsRevenge.exe
           if-no-files-found: error

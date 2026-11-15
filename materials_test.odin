@@ -54,8 +54,31 @@ acid_erodes_stone_and_wakes_neighbours :: proc(t: ^testing.T) {
     defer free(w)
     place(w, 40, 40, .Stone)
     place(w, 40, 39, .Acid)
-    for _ in 0..<11 { step_world(w) }
+    for _ in 0..<22 { step_world(w) }
     testing.expect(t, w.cells[index(40, 40)].kind != .Stone)
+}
+
+@test
+acid_expires_before_digging_through_deep_stone :: proc(t: ^testing.T) {
+    w := new(World)
+    defer free(w)
+    for y := 100; y < 180; y += 1 { place(w, 50, y, .Stone) }
+    place(w, 50, 99, .Acid)
+    for _ in 0..<175 { step_world(w) }
+    testing.expect(t, count_kind(w, .Acid) == 0)
+    testing.expect(t, kind_at(w, 50, 179) == .Stone)
+}
+
+@test
+acid_does_not_expire_while_stored_in_glass :: proc(t: ^testing.T) {
+    w := new(World)
+    defer free(w)
+    place(w, 50, 101, .Glass)
+    place(w, 49, 100, .Glass)
+    place(w, 51, 100, .Glass)
+    place(w, 50, 100, .Acid)
+    for _ in 0..<220 { step_world(w) }
+    testing.expect(t, kind_at(w, 50, 100) == .Acid)
 }
 
 @test
@@ -159,6 +182,22 @@ lava_and_water_keep_two_material_cells :: proc(t: ^testing.T) {
     testing.expect(t, count_kind(w, .Lava) == 1)
     testing.expect(t, count_kind(w, .Steam) == 1)
     testing.expect(t, count_kind(w, .Stone) == 0)
+}
+
+@test
+lava_ignites_wood_and_grass_and_vaporizes_acid :: proc(t: ^testing.T) {
+    w := new(World)
+    defer free(w)
+    place(w, 90, 99, .Stone)
+    place(w, 90, 98, .Lava)
+    place(w, 89, 98, .Wood)
+    place(w, 91, 98, .Grass)
+    place(w, 90, 97, .Acid)
+    step_world(w)
+    testing.expect(t, w.cells[index(89, 98)].burning)
+    testing.expect(t, w.cells[index(91, 98)].burning)
+    testing.expect(t, kind_at(w, 90, 97) == .Steam)
+    testing.expect(t, kind_at(w, 90, 98) == .Lava)
 }
 
 @test

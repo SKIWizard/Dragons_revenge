@@ -87,6 +87,7 @@ make_cell :: proc(w: ^World, kind: Material) -> Cell {
     case .Boom: c.life = 8; c.temperature = 600
     case .Snow: c.temperature = -10
     case .KnightDebris, .OgreDebris, .Blood, .Potion: c.life = i16(130+rand(w)%130)
+    case .Acid: c.life = i16(90+rand(w)%61)
     }
     c.max_life = c.life
     return c
@@ -408,24 +409,42 @@ react_cell :: proc(w: ^World, x, y: int) {
     }
 
     if k == .Acid {
-        offsets := [3][2]int{{0,1}, {-1,0}, {1,0}}
-        for offset in offsets {
-            nx, ny := x+offset[0], y+offset[1]
-            if !inside(nx, ny) || !dissolvable(kind_at(w, nx, ny)) { continue }
-            n := index(nx, ny)
-            w.cells[n].health -= 1
-            wake(w, nx, ny)
-            return
+        // Acid sealed in glass can be stored indefinitely. Contact with
+        // dissolvable terrain starts a short, consumable reaction.
+        if acid_contact(w, x, y) { w.cells[i].burn_progress = 1 }
+        if w.cells[i].burn_progress > 0 {
+            w.cells[i].life -= 1
+            if w.cells[i].life <= 0 { place(w, x, y, .Empty); return }
+        }
+        if w.tick%2 == 0 {
+            offsets := [3][2]int{{0,1}, {-1,0}, {1,0}}
+            for offset in offsets {
+                nx, ny := x+offset[0], y+offset[1]
+                if !inside(nx, ny) || !dissolvable(kind_at(w, nx, ny)) { continue }
+                n := index(nx, ny)
+                w.cells[n].health -= 1
+                w.cells[i].life -= 4
+                wake(w, nx, ny)
+                break
+            }
         }
     }
     if k == .Lava {
         offsets := [4][2]int{{0,-1}, {1,0}, {0,1}, {-1,0}}
         for offset in offsets {
             nx, ny := x+offset[0], y+offset[1]
-            if !inside(nx, ny) || kind_at(w, nx, ny) != .Water { continue }
-            place(w, nx, ny, .Steam)
-            w.cells[i].temperature -= 8
-            break
+            if !inside(nx, ny) { continue }
+            other := kind_at(w, nx, ny)
+            if other == .Wood || other == .Grass {
+                neighbour := &w.cells[index(nx, ny)]
+                neighbour.temperature = max(neighbour.temperature, i32(180))
+                neighbour.burning = true
+                wake(w, nx, ny)
+            } else if liquid(other) && other != .Lava {
+                if other == .Petrol { place(w, nx, ny, .Boom) }
+                else { place(w, nx, ny, .Steam) }
+                w.cells[i].temperature -= 3
+            }
         }
         if w.tick%4 == 0 { w.cells[i].temperature -= 1 }
     }

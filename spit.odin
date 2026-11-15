@@ -15,8 +15,8 @@ SPIT_CAPACITY :: 2048
 SPRAY_PIXELS_PER_TICK :: 10
 PLASMA_MIN_SPEED :: f32(5.5)
 PLASMA_MAX_SPEED :: f32(7.5)
-PLASMA_MIN_LIFE :: u16(56)
-PLASMA_MAX_LIFE :: u16(68)
+PLASMA_MIN_LIFE :: u16(28)
+PLASMA_MAX_LIFE :: u16(34)
 PLASMA_PENETRATION :: u8(10)
 
 FlyingParticle :: struct {
@@ -56,6 +56,16 @@ spit_one :: proc(w: ^World, p: ^Player, inventory: ^Inventory, state: ^SpitState
     mouth_x := p.x+PLAYER_W+1
     if p.facing < 0 { mouth_x = p.x-2 }
     mouth_y := p.y+8
+    // The cartoon jaw extends past the body. Launch from its tip, but never
+    // skip over a gate or enemy that stands between the body and the tip.
+    tip_x := p.x+30
+    if p.facing < 0 { tip_x = p.x-16 }
+    for probe := mouth_x+p.facing; (p.facing > 0 && probe <= tip_x) ||
+                                 (p.facing < 0 && probe >= tip_x); probe += p.facing {
+        if !inside(probe, mouth_y) || kind_at(w, probe, mouth_y) != .Empty ||
+           actor_occupies(w, probe, mouth_y) { break }
+        mouth_x = probe
+    }
     dx, dy := aim_x-f32(mouth_x), aim_y-f32(mouth_y)
     length := math.sqrt(dx*dx+dy*dy)
     if length < 0.01 { dx, dy, length = f32(p.facing), 0, 1 }
@@ -136,9 +146,8 @@ materialize_shot :: proc(w: ^World, shot: ^FlyingParticle, x, y: int) {
     }
 }
 
-// Ordinary materials share a ballistic spray. Plasma flies faster and farther,
-// burns through ten occupied cells, then disappears. Static solids keep falling
-// after flight until they find a solid surface.
+// Ordinary materials keep their horizontal momentum after the powered part of
+// the spray ends. Gravity bends the path until they reach a surface.
 update_flying_particles :: proc(w: ^World, state: ^SpitState) {
     for &shot in state.shots {
         if !shot.active { continue }
@@ -148,13 +157,7 @@ update_flying_particles :: proc(w: ^World, state: ^SpitState) {
                 shot.active = false
                 continue
             }
-            if solid(shot.material) {
-                shot.settling = true
-                shot.vx, shot.vy = 0, 0
-            } else {
-                materialize_shot(w, &shot, int(shot.x), int(shot.y))
-                continue
-            }
+            shot.settling = true
         }
         if shot.settling { shot.vy = min(SOLID_MAX_FALL_SPEED, shot.vy+SOLID_FALL_GRAVITY) }
         target_x, target_y := shot.x+shot.vx, shot.y+shot.vy

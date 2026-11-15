@@ -73,6 +73,8 @@ Enemy :: struct {
     squad_id, flank_side, flank_rank: int,
     barbarian_phase, retreat_start_x, retreat_dir, last_chase_x: int,
     chase_still_time, retreat_timer, overlap_time: f32,
+    boss_stuck_time: f32,
+    boss_last_x, boss_last_y, boss_last_player_x, boss_last_player_y: int,
     boss_jump_cooldown, boss_dash_cooldown, boss_dash_timer: f32,
     vx, vy, remainder_x, remainder_y: f32,
     alert_time, attack_time, attack_cooldown, animation_time: f32,
@@ -566,6 +568,37 @@ update_enemy :: proc(w: ^World, enemy_index: int, player: ^Player) {
     }
     enemy.grounded = enemy_hits_kind(w, enemy.kind, enemy.x, enemy.y+1)
     if enemy.grounded && enemy.vy > 0 { enemy.vy = 0 }
+    if enemy.kind == .Boss {
+        close := abs(dx) <= BOSS_W+PLAYER_W && abs(dy) <= BOSS_H
+        stationary := abs(enemy.x-enemy.boss_last_x) <= 1 &&
+                      abs(enemy.y-enemy.boss_last_y) <= 1 &&
+                      abs(player.x-enemy.boss_last_player_x) <= 1 &&
+                      abs(player.y-enemy.boss_last_player_y) <= 1
+        if close && stationary && enemy.alert_time > 0 {
+            enemy.boss_stuck_time += PHYSICS_DT
+        } else {
+            enemy.boss_stuck_time = 0
+        }
+        enemy.boss_last_x, enemy.boss_last_y = enemy.x, enemy.y
+        enemy.boss_last_player_x, enemy.boss_last_player_y = player.x, player.y
+        if enemy.boss_stuck_time >= 0.35 {
+            // Break a pin with a retreating jump, including during sword windup.
+            away := 1
+            if enemy.x+BOSS_W/2 < player.x+PLAYER_W/2 { away = -1 }
+            enemy.attacking = false
+            enemy.attack_time = 0
+            enemy.retreat_dir = away
+            enemy.retreat_start_x = enemy.x
+            enemy.retreat_timer = 0.35
+            enemy.facing = away
+            enemy.vx = f32(away)*BOSS_RUN_SPEED
+            enemy.vy = BOSS_JUMP_SPEED
+            enemy.grounded = false
+            enemy.boss_dash_timer = 0
+            enemy.boss_dash_cooldown = 0.5
+            enemy.boss_stuck_time = 0
+        }
+    }
     if enemy.retreat_timer > 0 {
         enemy.retreat_timer -= PHYSICS_DT
         if enemy.retreat_timer <= 0 {

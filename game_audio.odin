@@ -38,7 +38,7 @@ init_game_audio :: proc() -> GameAudio {
     for name, cue in SFX_NAMES {
         for variant in 0..<SFX_VARIANTS {
             path := rl.TextFormat("assets/sfx/%s_%02d.wav", name, variant+1)
-            result.sounds[cue][variant] = rl.LoadSound(path)
+            result.sounds[cue][variant] = load_embedded_sound(string(path))
         }
     }
     return result
